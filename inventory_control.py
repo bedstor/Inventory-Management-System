@@ -81,17 +81,15 @@ else:
     else:
         category_ans_id = category_result[0]
 
-        # Обработка ошибки
-        amount = ask_int('Количество товара:\n')
+    # Обработка ошибки
+    amount = ask_int('Количество товара:\n')
 
     # Обработка ошибки
-        cost = ask_int('Цена:\n')
+    cost = ask_int('Цена:\n')
 
     cursor.execute('''INSERT INTO inventory (item_name, quantity, price, category_id) VALUES (?, ?, ?, ?)''',
                     (product, amount, cost, category_ans_id))
     print(f'Товар {product} добавлен. Общая стоимость на складе: {cost * amount}')
-
-
 
 
 # Находим все товары, где кол-во меньше 5
@@ -117,6 +115,41 @@ join_result = cursor.fetchall()
 
 for name in join_result:
     print(f'Товар: {name[0]}, Категория: {name[1]}')
+
+
+# Запрашиваем у пользователя название товара для поиска в базе 
+search_product = input('Желаете найти товар? Введите его название:\n')
+
+
+# Объединяем таблицы, чтобы вместо category_id показать название товара
+cursor.execute('''SELECT inventory.item_name, inventory.price, categories.category_name
+FROM inventory
+JOIN categories ON inventory.category_id = categories.id
+WHERE inventory.item_name = ?''', (search_product,))
+
+# Сохраняем результат в переменную
+search_result = cursor.fetchone()
+
+# Если товар не найден, то выводим вежливое сообщение, иначе - выводим результат
+if search_result == None:
+    print('Упс! Такого товара ещё не существует...')
+else:
+    print(f'Товар: {search_result[0]}\nЦена: {search_result[1]}\nКатегория: {search_result[2]}')
+
+
+# Объединяем таблицы, чтобы сделать отчёт красивым
+cursor.execute('''SELECT inventory.item_name, categories.category_name, inventory.quantity
+FROM inventory
+JOIN categories ON inventory.category_id = categories.id
+WHERE inventory.quantity < 3''')
+
+# Сохраняем результат в переменную
+deficit_result = cursor.fetchall()
+
+# Выводим результат
+for row in deficit_result:
+    print(f'ВНИМАНИЕ! {row[0]} (Категория: {row[1]}) - осталось всего {row[2]} шт.')
+
 
 # Сохраняем и закрываем базу даных
 db.commit()
