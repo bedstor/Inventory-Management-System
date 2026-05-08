@@ -45,7 +45,7 @@ def main():
         # Поступление или добавление товара
         if choice == "1":
             # Запрашиваем у пользователя название товара
-            product = input("Название товара:\n")
+            product = input("Название товара: \n").lower()
 
             # Есть ли этот товар в базе
             cursor.execute(
@@ -65,18 +65,21 @@ def main():
                 old_quantity = cursor.fetchone()[0]
 
                 # Обработка ошибки
-                new_amount = ask_int("Сколько единиц прибыло?\n")
+                new_amount = ask_int("Сколько единиц прибыло? \n")
 
                 # Обновляем в базе
-                cursor.execute("UPDATE inventory SET quantity = quantity + ? \
-                                WHERE item_name = ?", (new_amount, product))
+                cursor.execute(
+                    """UPDATE inventory SET quantity = quantity + ?
+                                WHERE item_name = ?""",
+                    (new_amount, product),
+                )
 
                 # Считаем и выводим итог
                 total = old_quantity + new_amount
                 print(f"Запасы обновлены. Теперь на складе: {total} шт.")
             else:
                 # Запрашиваем у пользователя категорию
-                category_ans = input("Введите название категории:\n")
+                category_ans = input("Введите название категории: \n").lower()
 
                 # Находим id этой категории
                 cursor.execute(
@@ -98,10 +101,10 @@ def main():
                     category_ans_id = category_result[0]
 
                 # Обработка ошибки
-                amount = ask_int("Количество товара:\n")
+                amount = ask_int("Количество товара: \n")
 
                 # Обработка ошибки
-                cost = ask_int("Цена:\n")
+                cost = ask_int("Цена: \n")
 
                 cursor.execute(
                     """INSERT INTO inventory (item_name, quantity, price,
@@ -109,15 +112,18 @@ def main():
                     (product, amount, cost, category_ans_id),
                 )
 
-                print(f"Товар {product} добавлен. Общая стоимость на складе: \
-                    {cost * amount}")
+                print(
+                    f"Товар {product} добавлен. Общая стоимость на складе: {cost * amount}"
+                )
 
             db.commit()
 
         # Поиск товара
         elif choice == "2":
             # Запрашиваем у пользователя название товара для поиска в базе
-            search_product = input("Желаете найти товар? Введите его название:\n")
+            search_product = input(
+                "Желаете найти товар? Введите его название: \n"
+            ).lower()
 
             # Объединяем таблицы, чтобы вместо category_id показать название товара
             cursor.execute("SELECT inventory.item_name, inventory.price, \
@@ -135,8 +141,9 @@ def main():
             else:
                 print(
                     f"Товар: {search_result[0]}\nЦена: {search_result[1]}\nКатегория: \
-                    {search_result[2]}"
+{search_result[2]}"
                 )
+
 
         # Отчёт по дефициту
         elif choice == "3":
@@ -153,16 +160,16 @@ def main():
             # Выводим результат
             for row in deficit_result:
                 print(f"ВНИМАНИЕ! {row[0]} (Категория: {row[1]}) - \
-                    осталось всего {row[2]} шт.")
+осталось всего {row[2]} шт.\n")
 
         # Завершение работы программы
         elif choice == "4":
-            print("\nРабота завершена. До свидания!")
+            print("\nРабота завершена. До свидания! ")
             break
 
         # Обработка другого пункта (случайного нажатия)
         else:
-            print("\n ОШИБКА! Выберите другой пункт!")
+            print("ОШИБКА! Выберите другой пункт!")
 
     # Закрываем базу данных
     db.close()
