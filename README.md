@@ -21,7 +21,7 @@
 ## 🔧 Установка и запуск
 1. Склонируйте репозиторий:
    ```bash
-   gh repo clone bedstor/Inventory-Management-System
+   git clone https://github.com/bedstor/Inventory-Management-System.git
    ```
 2. Запустите основной файл:
    ```bash
