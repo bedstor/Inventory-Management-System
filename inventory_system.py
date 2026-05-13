@@ -2,7 +2,7 @@
 import sqlite3
 
 
-# Создаём функцию - обработчика ошибок
+# Создаём функцию обработчика ошибок
 def ask_int(question):
     while True:
         try:
