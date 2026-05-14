@@ -46,11 +46,9 @@ def main():
         if choice == "1":
             # Запрашиваем у пользователя название товара
             product = input("Название товара: \n").lower()
-
             # Есть ли этот товар в базе
             cursor.execute(
                 """SELECT item_name FROM inventory WHERE item_name = ?""", (product,))
-
             # Результат в переменную
             result = cursor.fetchone()
 
@@ -59,37 +57,32 @@ def main():
                 # Сначала узнаём, сколько было (достаём из ячейки [0])
                 cursor.execute(
                     """SELECT quantity FROM inventory WHERE item_name = ?""", (product,))
-
                 old_quantity = cursor.fetchone()[0]
-
                 # Обработка ошибки
                 new_amount = ask_int("Сколько единиц прибыло? \n")
-
                 # Обновляем в базе
                 cursor.execute(
                     """UPDATE inventory SET quantity = quantity + ?
                                 WHERE item_name = ?""", (new_amount, product))
-
                 # Считаем и выводим итог
                 total = old_quantity + new_amount
                 print(f"Запасы обновлены. Теперь на складе: {total} шт.")
             else:
                 # Запрашиваем у пользователя категорию
                 category_ans = input("Введите название категории: \n").lower()
-
                 # Находим id этой категории
                 cursor.execute(
                     "SELECT id FROM categories WHERE category_name = ?", (category_ans,))
                 category_result = cursor.fetchone()
-
+                
                 # Если категории нет - добавляем, иначе - берём id этой категории
                 if category_result == None:
                     # Добавляем название этой категории в таблицу
                     cursor.execute(
                         "INSERT INTO categories (category_name) VALUES (?)", (category_ans,))
-
                     # Записываем айди этой категории в переменную
                     category_ans_id = cursor.lastrowid
+                    
                 else:
                     category_ans_id = category_result[0]
 
